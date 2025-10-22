@@ -71,28 +71,22 @@ export default function PlaceDetailPage({ params, searchParams }: PlaceDetailPag
           address={placeAddress || '주소 정보 없음'}
         />
 
-        {/* 리뷰 없음 안내 */}
+        {/* 리뷰 작성 버튼 */}
         <div className="bg-white border-b border-slate-200">
-          <div className="container mx-auto px-4 py-8 max-w-4xl">
-            <div className="flex flex-col items-center gap-4 text-center">
-              <AlertCircle className="w-16 h-16 text-yellow-500" />
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 mb-2">
-                  아직 리뷰가 없는 장소입니다
-                </h2>
-                <p className="text-slate-600 mb-4">
-                  이 장소의 첫 번째 리뷰를 작성해주세요!
-                </p>
-                <Link href={reviewWriteUrl}>
-                  <Button className="gap-2" size="lg">
-                    <Edit className="w-5 h-5" />
-                    첫 리뷰 작성하기
-                  </Button>
-                </Link>
-              </div>
+          <div className="container mx-auto px-4 py-6 max-w-4xl">
+            <div className="flex justify-end">
+              <Link href={reviewWriteUrl}>
+                <Button className="gap-2">
+                  <Edit className="w-4 h-4" />
+                  리뷰 작성하기
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
+
+        {/* 리뷰 목록 */}
+        <ReviewList placeId={placeId} />
       </div>
     );
   }
