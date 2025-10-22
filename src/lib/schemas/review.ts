@@ -5,9 +5,10 @@ import { z } from 'zod';
 
 /**
  * 리뷰 작성 스키마
+ * placeId는 UUID(DB 장소) 또는 네이버 URL(신규 장소) 모두 허용
  */
 export const CreateReviewSchema = z.object({
-  placeId: z.string().uuid('유효하지 않은 장소 ID입니다'),
+  placeId: z.string().min(1, '장소 ID가 필요합니다'),
   authorName: z
     .string()
     .min(2, '작성자 이름은 최소 2자 이상이어야 합니다')

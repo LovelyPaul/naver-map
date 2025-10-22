@@ -69,6 +69,14 @@ export async function getReviews(
 }
 
 /**
+ * UUID 형식 체크
+ */
+function isUUID(str: string): boolean {
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidPattern.test(str);
+}
+
+/**
  * 리뷰 생성
  */
 export async function createReview(
@@ -77,6 +85,46 @@ export async function createReview(
   logger: AppLogger
 ): Promise<Review> {
   try {
+    // placeId가 UUID가 아니면 (네이버 URL이면) 장소를 먼저 생성
+    if (!isUUID(input.placeId)) {
+      logger.info(`Creating new place with naverPlaceId: ${input.placeId}`);
+
+      // 이미 존재하는지 확인
+      const { data: existingPlace } = await supabase
+        .from('places')
+        .select('id')
+        .eq('naver_place_id', input.placeId)
+        .single();
+
+      if (!existingPlace) {
+        // 새 장소 생성 (최소한의 정보만)
+        const { data: newPlace, error: placeError } = await supabase
+          .from('places')
+          .insert({
+            naver_place_id: input.placeId,
+            name: '새로운 장소',
+            category_main: '기타',
+            category_sub: null,
+            address: '주소 정보 없음',
+            latitude: 0,
+            longitude: 0,
+          })
+          .select('id')
+          .single();
+
+        if (placeError) {
+          logger.error('Create place error:', placeError);
+          throw placeError;
+        }
+
+        // 새로 생성된 장소의 UUID를 사용
+        input.placeId = newPlace.id;
+      } else {
+        // 기존 장소의 UUID를 사용
+        input.placeId = existingPlace.id;
+      }
+    }
+
     // 비밀번호 해싱
     const passwordHash = await hashPassword(input.password);
 
