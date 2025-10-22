@@ -22,7 +22,7 @@ const getReviews = async (
     });
     const parsed = GetReviewsResponseSchema.parse(data);
     return {
-      items: parsed.data.items,
+      items: parsed.data.items as Review[],
       currentPage: parsed.data.pagination.currentPage,
       hasNextPage: parsed.data.pagination.hasNextPage,
     };

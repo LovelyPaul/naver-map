@@ -54,8 +54,12 @@ async function transformNaverResultToPlaceListItem(
     }
   }
 
+  // ID 생성: DB의 UUID, 또는 Naver link, 또는 fallback으로 좌표+이름 조합
+  const fallbackId = `${name}-${latitude}-${longitude}`;
+  const id = placeData?.id || (naverResult.link && naverResult.link.trim() !== '' ? naverResult.link : fallbackId);
+
   return {
-    id: placeData?.id || naverResult.link, // UUID 또는 Naver Place ID
+    id,
     name,
     address,
     category,

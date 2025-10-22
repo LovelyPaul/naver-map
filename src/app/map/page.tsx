@@ -4,6 +4,7 @@
 // 메인 지도 페이지 - 장소 검색 및 지도 표시
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { MapContainer } from '@/features/map/components/MapContainer';
 import { SearchBar } from '@/features/map/components/SearchBar';
 import { SearchResultsList } from '@/features/map/components/SearchResultsList';
@@ -18,6 +19,7 @@ import type { MapMarker } from '@/types/map';
  * 지도 내부 컴포넌트 (MapContext 사용을 위해 분리)
  */
 function MapContent({ searchQuery }: { searchQuery: string }) {
+  const router = useRouter();
   const { map } = useMap();
   const { data: places = [], isLoading, error } = useSearchPlaces(searchQuery, 20);
 
@@ -36,16 +38,12 @@ function MapContent({ searchQuery }: { searchQuery: string }) {
     }));
   }, [places]);
 
-  // 마커 클릭 핸들러
+  // 마커 클릭 핸들러 - 리뷰 페이지로 이동
   const handleMarkerClick = (marker: MapMarker) => {
-    if (map) {
-      const newCenter = new window.naver.maps.LatLng(marker.position.lat, marker.position.lng);
-      map.setCenter(newCenter);
-      map.setZoom(16);
-    }
+    router.push(`/places/${marker.placeId}`);
   };
 
-  // 장소 클릭 핸들러 (검색 결과 리스트)
+  // 장소 클릭 핸들러 (검색 결과 리스트) - 지도 중심 이동
   const handlePlaceClick = (place: PlaceListItem) => {
     if (map) {
       const newCenter = new window.naver.maps.LatLng(place.latitude, place.longitude);

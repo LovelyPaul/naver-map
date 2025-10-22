@@ -9,7 +9,7 @@ const getPlaceDetail = async (placeId: string): Promise<PlaceDetail> => {
   try {
     const { data } = await apiClient.get(`/api/places/${placeId}`);
     const parsed = PlaceDetailResponseSchema.parse(data);
-    return parsed;
+    return parsed.data as PlaceDetail;
   } catch (error) {
     const message = extractApiErrorMessage(error, '장소 정보를 불러올 수 없습니다.');
     throw new Error(message);

@@ -17,6 +17,26 @@ type PlaceCardProps = {
 };
 
 /**
+ * 카테고리별 placeholder 이미지 URL 생성
+ * picsum.photos를 사용하여 카테고리에 맞는 이미지 제공
+ */
+function getCategoryPlaceholderImage(categoryMain: string): string {
+  const categoryImages: Record<string, string> = {
+    '음식점': 'https://picsum.photos/seed/food/200/200',
+    '카페': 'https://picsum.photos/seed/cafe/200/200',
+    '디저트': 'https://picsum.photos/seed/dessert/200/200',
+    '베이커리': 'https://picsum.photos/seed/bakery/200/200',
+    '술집': 'https://picsum.photos/seed/bar/200/200',
+    '한식': 'https://picsum.photos/seed/korean/200/200',
+    '중식': 'https://picsum.photos/seed/chinese/200/200',
+    '일식': 'https://picsum.photos/seed/japanese/200/200',
+    '양식': 'https://picsum.photos/seed/western/200/200',
+  };
+
+  return categoryImages[categoryMain] || 'https://picsum.photos/seed/restaurant/200/200';
+}
+
+/**
  * 장소 정보를 표시하는 카드 컴포넌트
  *
  * @param place 장소 정보
@@ -30,6 +50,9 @@ export function PlaceCard({ place, onClick, className = '' }: PlaceCardProps) {
     }
   };
 
+  // 이미지 URL 결정: photoUrl이 있으면 사용, 없으면 카테고리별 placeholder
+  const imageUrl = place.photoUrl || getCategoryPlaceholderImage(place.categoryMain);
+
   const cardContent = (
     <Card
       className={`hover:shadow-lg transition-shadow cursor-pointer ${className}`}
@@ -39,32 +62,14 @@ export function PlaceCard({ place, onClick, className = '' }: PlaceCardProps) {
         <div className="flex gap-3">
           {/* 이미지 썸네일 */}
           <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
-            {place.photoUrl ? (
-              <Image
-                src={place.photoUrl}
-                alt={place.name}
-                fill
-                className="object-cover"
-                sizes="80px"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </div>
-            )}
+            <Image
+              src={imageUrl}
+              alt={place.name}
+              fill
+              className="object-cover"
+              sizes="80px"
+              unoptimized
+            />
           </div>
 
           {/* 장소 정보 */}
@@ -108,14 +113,10 @@ export function PlaceCard({ place, onClick, className = '' }: PlaceCardProps) {
     </Card>
   );
 
-  // 장소 상세 페이지로 링크 (hasReviews가 true인 경우만)
-  if (place.hasReviews) {
-    return (
-      <Link href={`/places/${place.id}`} className="block">
-        {cardContent}
-      </Link>
-    );
-  }
-
-  return cardContent;
+  // 장소 상세/리뷰 작성 페이지로 링크 (모든 장소)
+  return (
+    <Link href={`/places/${place.id}`} className="block">
+      {cardContent}
+    </Link>
+  );
 }

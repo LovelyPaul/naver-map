@@ -81,16 +81,16 @@ app.delete(
     const logger = getLogger(c);
 
     try {
-      const success = await deleteReview(reviewId, password, supabase, logger);
+      const isDeleted = await deleteReview(reviewId, password, supabase, logger);
 
-      if (!success) {
+      if (!isDeleted) {
         return respond(
           c,
           failure(401, ReviewErrorCode.INVALID_PASSWORD, '비밀번호가 일치하지 않습니다')
         );
       }
 
-      return respond(c, { ok: true, status: 204, data: null });
+      return respond(c, success({ deleted: true }));
     } catch (error) {
       logger.error('Delete review error:', error);
       return respond(
