@@ -40,7 +40,8 @@ function MapContent({ searchQuery }: { searchQuery: string }) {
 
   // 마커 클릭 핸들러 - 리뷰 페이지로 이동
   const handleMarkerClick = (marker: MapMarker) => {
-    router.push(`/places/${marker.placeId}`);
+    const encodedId = encodeURIComponent(marker.placeId);
+    router.push(`/places/${encodedId}`);
   };
 
   // 장소 클릭 핸들러 (검색 결과 리스트) - 지도 중심 이동
