@@ -151,7 +151,7 @@ export function PlaceCard({ place, onClick, showReviewButton = false, className 
                     }).toString()}`
               }
             >
-              <Button variant="outline" size="sm" className="w-full gap-2">
+              <Button variant="default" size="sm" className="w-full gap-2 bg-black hover:bg-gray-800">
                 <Edit className="w-4 h-4" />
                 리뷰 작성
               </Button>

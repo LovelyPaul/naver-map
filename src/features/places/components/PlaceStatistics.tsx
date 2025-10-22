@@ -80,7 +80,7 @@ export function PlaceStatistics({
 
           {/* 리뷰 작성 버튼 */}
           <Link href={`/reviews/write?${reviewWriteParams.toString()}`}>
-            <Button className="gap-2">
+            <Button className="gap-2 bg-black hover:bg-gray-800">
               <Edit className="w-4 h-4" />
               리뷰 작성
             </Button>

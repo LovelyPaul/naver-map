@@ -76,7 +76,7 @@ export default function PlaceDetailPage({ params, searchParams }: PlaceDetailPag
           <div className="container mx-auto px-4 py-6 max-w-4xl">
             <div className="flex justify-end">
               <Link href={reviewWriteUrl}>
-                <Button className="gap-2">
+                <Button className="gap-2 bg-black hover:bg-gray-800">
                   <Edit className="w-4 h-4" />
                   리뷰 작성하기
                 </Button>
