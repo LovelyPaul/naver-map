@@ -15,7 +15,12 @@ import { usePlaceDetail } from '@/features/places/hooks/usePlaceDetail';
 
 type PlaceDetailPageProps = {
   params: Promise<{ placeId: string }>;
-  searchParams: Promise<{ name?: string }>;
+  searchParams: Promise<{
+    name?: string;
+    address?: string;
+    categoryMain?: string;
+    categorySub?: string;
+  }>;
 };
 
 /**
@@ -31,11 +36,14 @@ function isUUID(str: string): boolean {
  */
 export default function PlaceDetailPage({ params, searchParams }: PlaceDetailPageProps) {
   const { placeId: encodedPlaceId } = use(params);
-  const { name: encodedName } = use(searchParams);
+  const urlParams = use(searchParams);
   // URL 인코딩된 placeId를 디코딩
   const placeId = decodeURIComponent(encodedPlaceId);
-  // 장소 이름 디코딩 (옵셔널)
-  const placeName = encodedName ? decodeURIComponent(encodedName) : undefined;
+  // 장소 정보 (URL 파라미터에서)
+  const placeName = urlParams.name;
+  const placeAddress = urlParams.address;
+  const placeCategoryMain = urlParams.categoryMain;
+  const placeCategorySub = urlParams.categorySub;
 
   // UUID가 아니면 (네이버 URL이면) DB 조회 스킵
   const isDbPlace = isUUID(placeId);
@@ -50,17 +58,23 @@ export default function PlaceDetailPage({ params, searchParams }: PlaceDetailPag
 
     return (
       <div className="min-h-screen bg-slate-50">
+        {/* 장소 정보 헤더 */}
+        <PlaceInfoHeader
+          name={placeName || '장소'}
+          categoryMain={placeCategoryMain || '기타'}
+          categorySub={placeCategorySub}
+          address={placeAddress || '주소 정보 없음'}
+        />
+
+        {/* 리뷰 없음 안내 */}
         <div className="bg-white border-b border-slate-200">
           <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="flex flex-col items-center gap-4 text-center">
               <AlertCircle className="w-16 h-16 text-yellow-500" />
               <div>
-                <h1 className="text-2xl font-bold text-slate-900 mb-2">
-                  {placeName || '장소'}
-                </h1>
-                <p className="text-slate-600 mb-2">
+                <h2 className="text-xl font-bold text-slate-900 mb-2">
                   아직 리뷰가 없는 장소입니다
-                </p>
+                </h2>
                 <p className="text-slate-600 mb-4">
                   이 장소의 첫 번째 리뷰를 작성해주세요!
                 </p>
