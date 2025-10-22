@@ -4,6 +4,10 @@ import type { AppConfig } from '@/backend/hono/context';
 const envSchema = z.object({
   SUPABASE_URL: z.string().url(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  NAVER_CLIENT_ID: z.string().min(1),
+  NAVER_CLIENT_SECRET: z.string().min(1),
+  NCP_MAPS_CLIENT_ID: z.string().min(1),
+  NCP_MAPS_CLIENT_SECRET: z.string().min(1),
 });
 
 let cachedConfig: AppConfig | null = null;
@@ -16,6 +20,10 @@ export const getAppConfig = (): AppConfig => {
   const parsed = envSchema.safeParse({
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    NAVER_CLIENT_ID: process.env.NAVER_CLIENT_ID,
+    NAVER_CLIENT_SECRET: process.env.NAVER_CLIENT_SECRET,
+    NCP_MAPS_CLIENT_ID: process.env.NCP_MAPS_CLIENT_ID,
+    NCP_MAPS_CLIENT_SECRET: process.env.NCP_MAPS_CLIENT_SECRET,
   });
 
   if (!parsed.success) {
@@ -29,6 +37,14 @@ export const getAppConfig = (): AppConfig => {
     supabase: {
       url: parsed.data.SUPABASE_URL,
       serviceRoleKey: parsed.data.SUPABASE_SERVICE_ROLE_KEY,
+    },
+    naver: {
+      clientId: parsed.data.NAVER_CLIENT_ID,
+      clientSecret: parsed.data.NAVER_CLIENT_SECRET,
+    },
+    ncpMaps: {
+      clientId: parsed.data.NCP_MAPS_CLIENT_ID,
+      clientSecret: parsed.data.NCP_MAPS_CLIENT_SECRET,
     },
   } satisfies AppConfig;
 

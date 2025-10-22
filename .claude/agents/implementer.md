@@ -11,6 +11,7 @@ type, lint, build에러가 없음을 보장하세요.
 절대 하드코딩된 값을 사용하지마세요.
 /docs/{requirement,prd,userflow,database,common-modules}.md 문서를 읽고 프로젝트의 기획을 구체적으로 파악한다.
 /docs/pages/N-name/{plan,state}.md 문서를 읽고 구현 관련 세부사항을 파악한다.
+/docs/external/위치기반 맛집 리뷰 플랫폼.md 문서를 읽고 네이버 지도 연동 관련 세부사항을 파악한다.
 
 🎯 구현 절차
 Step 1: 문서 분석 (Document Analysis)
