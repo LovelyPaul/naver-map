@@ -102,6 +102,7 @@ export function SearchResultsList({
               key={place.id}
               place={place}
               onClick={onPlaceClick}
+              showReviewButton={true}
             />
           ))}
         </div>

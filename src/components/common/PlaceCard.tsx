@@ -5,14 +5,18 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { Edit } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { formatCategory } from '@/lib/utils/category';
 import type { PlaceListItem } from '@/types/place';
 
 type PlaceCardProps = {
   place: PlaceListItem;
   onClick?: (place: PlaceListItem) => void;
+  /** 리뷰 작성 버튼 표시 여부 */
+  showReviewButton?: boolean;
   className?: string;
 };
 
@@ -41,13 +45,20 @@ function getCategoryPlaceholderImage(categoryMain: string): string {
  *
  * @param place 장소 정보
  * @param onClick 클릭 핸들러
+ * @param showReviewButton 리뷰 작성 버튼 표시 여부
  * @param className 추가 CSS 클래스
  */
-export function PlaceCard({ place, onClick, className = '' }: PlaceCardProps) {
+export function PlaceCard({ place, onClick, showReviewButton = false, className = '' }: PlaceCardProps) {
   const handleClick = () => {
     if (onClick) {
       onClick(place);
     }
+  };
+
+  const handleReviewButtonClick = (e: React.MouseEvent) => {
+    // 이벤트 버블링 방지 (카드 클릭 이벤트와 분리)
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   // 이미지 URL 결정: photoUrl이 있으면 사용, 없으면 카테고리별 placeholder
@@ -109,6 +120,27 @@ export function PlaceCard({ place, onClick, className = '' }: PlaceCardProps) {
             )}
           </div>
         </div>
+
+        {/* 리뷰 작성 버튼 */}
+        {showReviewButton && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <Link
+              href={`/reviews/write?${new URLSearchParams({
+                placeId: place.id,
+                placeName: place.name,
+                address: place.address,
+                categoryMain: place.categoryMain,
+                ...(place.categorySub && { categorySub: place.categorySub }),
+              }).toString()}`}
+              onClick={handleReviewButtonClick}
+            >
+              <Button variant="outline" size="sm" className="w-full gap-2">
+                <Edit className="w-4 h-4" />
+                리뷰 작성
+              </Button>
+            </Link>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
