@@ -11,7 +11,7 @@ const searchPlaces = async (query: string, limit = 10): Promise<PlaceListItem[]>
       params: { query, limit },
     });
     const parsed = SearchPlacesResponseSchema.parse(data);
-    return parsed.data;
+    return parsed.items;
   } catch (error) {
     const message = extractApiErrorMessage(error, '장소 검색에 실패했습니다.');
     throw new Error(message);
