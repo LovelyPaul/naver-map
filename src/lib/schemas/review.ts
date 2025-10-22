@@ -68,9 +68,10 @@ export type DeleteReviewInput = z.infer<typeof DeleteReviewSchema>;
 
 /**
  * 리뷰 목록 조회 쿼리 스키마
+ * placeId는 UUID(DB 장소) 또는 네이버 URL(신규 장소) 모두 허용
  */
 export const GetReviewsQuerySchema = z.object({
-  placeId: z.string().uuid(),
+  placeId: z.string().min(1, '장소 ID가 필요합니다'),
   page: z.coerce.number().int().min(1).optional().default(1),
   limit: z.coerce.number().int().min(1).max(20).optional().default(10),
 });
