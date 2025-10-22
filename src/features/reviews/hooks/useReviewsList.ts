@@ -22,9 +22,9 @@ const getReviews = async (
     });
     const parsed = GetReviewsResponseSchema.parse(data);
     return {
-      items: parsed.data.items as Review[],
-      currentPage: parsed.data.pagination.currentPage,
-      hasNextPage: parsed.data.pagination.hasNextPage,
+      items: parsed.items as Review[],
+      currentPage: parsed.pagination.currentPage,
+      hasNextPage: parsed.pagination.hasNextPage,
     };
   } catch (error) {
     const message = extractApiErrorMessage(error, '리뷰 목록을 불러올 수 없습니다.');
