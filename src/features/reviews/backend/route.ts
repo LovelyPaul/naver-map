@@ -7,11 +7,12 @@ import { getSupabase, getLogger } from '@/backend/hono/context';
 import { success, failure, respond } from '@/backend/http/response';
 import {
   CreateReviewSchema,
+  UpdateReviewSchema,
   DeleteReviewSchema,
   GetReviewsQuerySchema,
   ReviewIdParamSchema,
 } from './schema';
-import { getReviews, createReview, deleteReview } from './service';
+import { getReviews, createReview, updateReview, deleteReview } from './service';
 import { ReviewErrorCode } from './error';
 
 const app = new Hono<AppEnv>();
@@ -61,6 +62,41 @@ app.post(
       return respond(
         c,
         failure(500, ReviewErrorCode.DATABASE_ERROR, '리뷰 생성 중 오류가 발생했습니다')
+      );
+    }
+  }
+);
+
+/**
+ * PUT /api/reviews/:reviewId
+ * 리뷰 수정 (비밀번호 검증)
+ */
+app.put(
+  '/api/reviews/:reviewId',
+  zValidator('param', ReviewIdParamSchema),
+  zValidator('json', UpdateReviewSchema),
+  async (c) => {
+    const { reviewId } = c.req.valid('param');
+    const input = c.req.valid('json');
+    const supabase = getSupabase(c);
+    const logger = getLogger(c);
+
+    try {
+      const review = await updateReview(reviewId, input, supabase, logger);
+
+      if (!review) {
+        return respond(
+          c,
+          failure(401, ReviewErrorCode.INVALID_PASSWORD, '비밀번호가 일치하지 않거나 리뷰를 찾을 수 없습니다')
+        );
+      }
+
+      return respond(c, success(review));
+    } catch (error) {
+      logger.error('Update review error:', error);
+      return respond(
+        c,
+        failure(500, ReviewErrorCode.DATABASE_ERROR, '리뷰 수정 중 오류가 발생했습니다')
       );
     }
   }

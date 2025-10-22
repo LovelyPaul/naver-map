@@ -3,11 +3,17 @@
 // ReviewList Component
 // 리뷰 목록 (무한 스크롤)
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Loader2, MessageSquare } from 'lucide-react';
 import { ReviewCard } from '@/components/common/ReviewCard';
 import { useReviewsList } from '@/features/reviews/hooks/useReviewsList';
+import { useUpdateReview } from '@/features/reviews/hooks/useUpdateReview';
+import { useDeleteReview } from '@/features/reviews/hooks/useDeleteReview';
+import { EditReviewDialog } from './EditReviewDialog';
+import { PasswordDialog } from './PasswordDialog';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
+import type { Review } from '@/types/review';
 
 /**
  * ReviewList Props
@@ -34,6 +40,13 @@ export function ReviewList({ placeId }: ReviewListProps) {
     error,
   } = useReviewsList(placeId, 10);
 
+  const updateReviewMutation = useUpdateReview();
+  const deleteReviewMutation = useDeleteReview();
+
+  // 다이얼로그 상태
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
+
   // 무한 스크롤을 위한 Intersection Observer
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +68,64 @@ export function ReviewList({ placeId }: ReviewListProps) {
       observer.disconnect();
     };
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  // 핸들러 함수들
+  const handleEdit = (review: Review) => {
+    setEditingReview(review);
+  };
+
+  const handleEditSubmit = async (data: { rating: number; content: string; password: string }) => {
+    if (!editingReview) return;
+
+    try {
+      await updateReviewMutation.mutateAsync({
+        reviewId: editingReview.id,
+        input: data,
+      });
+
+      toast({
+        title: '리뷰 수정 완료',
+        description: '리뷰가 성공적으로 수정되었습니다.',
+      });
+      setEditingReview(null);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '리뷰 수정에 실패했습니다.';
+      toast({
+        variant: 'destructive',
+        title: '수정 실패',
+        description: errorMessage,
+      });
+    }
+  };
+
+  const handleDelete = (reviewId: string) => {
+    setDeletingReviewId(reviewId);
+  };
+
+  const handleDeleteConfirm = async (password: string) => {
+    if (!deletingReviewId) return;
+
+    try {
+      await deleteReviewMutation.mutateAsync({
+        reviewId: deletingReviewId,
+        password,
+        placeId,
+      });
+
+      toast({
+        title: '리뷰 삭제 완료',
+        description: '리뷰가 성공적으로 삭제되었습니다.',
+      });
+      setDeletingReviewId(null);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '리뷰 삭제에 실패했습니다.';
+      toast({
+        variant: 'destructive',
+        title: '삭제 실패',
+        description: errorMessage,
+      });
+    }
+  };
 
   // 로딩 상태
   if (isLoading) {
@@ -113,7 +184,13 @@ export function ReviewList({ placeId }: ReviewListProps) {
 
         <div className="space-y-4">
           {allReviews.map((review) => (
-            <ReviewCard key={review.id} review={review} />
+            <ReviewCard
+              key={review.id}
+              review={review}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              showActions={true}
+            />
           ))}
         </div>
 
@@ -132,6 +209,29 @@ export function ReviewList({ placeId }: ReviewListProps) {
               </Button>
             )}
           </div>
+        )}
+
+        {/* 수정 다이얼로그 */}
+        {editingReview && (
+          <EditReviewDialog
+            open={true}
+            onClose={() => setEditingReview(null)}
+            onSubmit={handleEditSubmit}
+            review={editingReview}
+            isLoading={updateReviewMutation.isPending}
+          />
+        )}
+
+        {/* 삭제 확인 다이얼로그 */}
+        {deletingReviewId && (
+          <PasswordDialog
+            open={true}
+            onClose={() => setDeletingReviewId(null)}
+            onSubmit={handleDeleteConfirm}
+            title="리뷰 삭제"
+            description="리뷰를 삭제하려면 작성 시 입력한 비밀번호를 입력해주세요."
+            isLoading={deleteReviewMutation.isPending}
+          />
         )}
       </div>
     </div>

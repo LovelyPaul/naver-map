@@ -60,7 +60,7 @@ function FormContent() {
 
     try {
       // API 호출
-      await createReviewMutation.mutateAsync({
+      const review = await createReviewMutation.mutateAsync({
         placeId: state.placeId,
         authorName: state.authorName,
         authorEmail: state.authorEmail || undefined,
@@ -74,7 +74,8 @@ function FormContent() {
         title: '리뷰 등록 완료',
         description: '리뷰가 성공적으로 등록되었습니다.',
       });
-      router.push(`/places/${state.placeId}`);
+      // 생성된 리뷰의 placeId(UUID)로 리다이렉트
+      router.push(`/places/${review.placeId}`);
     } catch (error) {
       // 에러 처리
       const errorMessage =

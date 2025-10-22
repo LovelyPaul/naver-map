@@ -4,7 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { AppLogger } from '@/backend/hono/context';
 import { hashPassword, comparePassword } from '@/backend/utils/password';
 import type { Review, ReviewsPageResponse } from '@/types/review';
-import type { CreateReviewInput, GetReviewsQuery } from './schema';
+import type { CreateReviewInput, UpdateReviewInput, GetReviewsQuery } from './schema';
 
 /**
  * 리뷰 목록 조회 (페이지네이션)
@@ -159,6 +159,68 @@ export async function createReview(
     };
   } catch (error) {
     logger.error('Create review error:', error);
+    throw error;
+  }
+}
+
+/**
+ * 리뷰 수정 (비밀번호 검증)
+ */
+export async function updateReview(
+  reviewId: string,
+  input: UpdateReviewInput,
+  supabase: SupabaseClient,
+  logger: AppLogger
+): Promise<Review | null> {
+  try {
+    // 리뷰 조회
+    const { data: review, error: fetchError } = await supabase
+      .from('reviews')
+      .select('password_hash')
+      .eq('id', reviewId)
+      .single();
+
+    if (fetchError || !review) {
+      logger.warn(`Review not found: ${reviewId}`);
+      return null;
+    }
+
+    // 비밀번호 검증
+    const isValid = await comparePassword(input.password, review.password_hash);
+    if (!isValid) {
+      logger.warn(`Invalid password for review: ${reviewId}`);
+      return null;
+    }
+
+    // 리뷰 수정 (rating, content만 수정 가능)
+    const updateData: Record<string, unknown> = {};
+    if (input.rating !== undefined) updateData.rating = input.rating;
+    if (input.content !== undefined) updateData.content = input.content;
+
+    const { data: updatedReview, error: updateError } = await supabase
+      .from('reviews')
+      .update(updateData)
+      .eq('id', reviewId)
+      .select('id, place_id, author_name, author_email, rating, content, created_at, updated_at')
+      .single();
+
+    if (updateError) {
+      logger.error('Update review error:', updateError);
+      throw updateError;
+    }
+
+    return {
+      id: updatedReview.id,
+      placeId: updatedReview.place_id,
+      authorName: updatedReview.author_name,
+      authorEmail: updatedReview.author_email,
+      rating: updatedReview.rating,
+      content: updatedReview.content,
+      createdAt: updatedReview.created_at,
+      updatedAt: updatedReview.updated_at,
+    };
+  } catch (error) {
+    logger.error('Update review error:', error);
     throw error;
   }
 }

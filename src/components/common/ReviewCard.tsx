@@ -12,6 +12,7 @@ import type { Review } from '@/types/review';
 
 type ReviewCardProps = {
   review: Review;
+  onEdit?: (review: Review) => void;
   onDelete?: (reviewId: string) => void;
   showActions?: boolean;
   className?: string;
@@ -27,10 +28,17 @@ type ReviewCardProps = {
  */
 export function ReviewCard({
   review,
+  onEdit,
   onDelete,
   showActions = false,
   className = '',
 }: ReviewCardProps) {
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit(review);
+    }
+  };
+
   const handleDelete = () => {
     if (onDelete) {
       onDelete(review.id);
@@ -69,6 +77,14 @@ export function ReviewCard({
             <Button
               variant="ghost"
               size="sm"
+              onClick={handleEdit}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            >
+              수정
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleDelete}
               className="text-red-600 hover:text-red-700 hover:bg-red-50"
             >
@@ -93,12 +109,14 @@ export function ReviewCard({
  */
 export function ReviewList({
   reviews,
+  onEdit,
   onDelete,
   showActions = false,
   emptyMessage = '아직 리뷰가 없습니다.',
   className = '',
 }: {
   reviews: Review[];
+  onEdit?: (review: Review) => void;
   onDelete?: (reviewId: string) => void;
   showActions?: boolean;
   emptyMessage?: string;
@@ -118,6 +136,7 @@ export function ReviewList({
         <ReviewCard
           key={review.id}
           review={review}
+          onEdit={onEdit}
           onDelete={onDelete}
           showActions={showActions}
         />
