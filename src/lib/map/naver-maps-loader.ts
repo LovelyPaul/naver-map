@@ -35,6 +35,14 @@ export async function loadNaverMapsScript(): Promise<void> {
     throw error;
   }
 
+  // 인증 실패 핸들러 등록
+  if (typeof window !== 'undefined') {
+    (window as any).navermap_authFailure = function () {
+      console.error('네이버 지도 API 인증 실패: 클라이언트 ID와 웹 서비스 URL을 확인해주세요.');
+      loaderStatus = 'error';
+    };
+  }
+
   // 새로운 로드 시작
   loaderStatus = 'loading';
 
@@ -56,7 +64,7 @@ export async function loadNaverMapsScript(): Promise<void> {
     // 스크립트 태그 생성
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`;
     script.async = true;
 
     // 로드 성공
