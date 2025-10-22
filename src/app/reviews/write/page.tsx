@@ -7,7 +7,7 @@ import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { ReviewFormProvider, useReviewForm } from './context';
 import { PlaceInfoSection } from './components/PlaceInfoSection';
 import {
@@ -92,10 +92,7 @@ function FormContent() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <form onSubmit={handleSubmit}>
         <Card>
-          <CardHeader>
-            <CardTitle>리뷰 작성</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-6">
             {/* 작성자 정보 */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-slate-700">작성자 정보</h3>
