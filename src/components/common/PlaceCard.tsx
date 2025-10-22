@@ -113,9 +113,14 @@ export function PlaceCard({ place, onClick, className = '' }: PlaceCardProps) {
     </Card>
   );
 
-  // 장소 상세/리뷰 작성 페이지로 링크 (모든 장소)
+  // 장소 상세 페이지로 링크 (모든 장소)
+  // ID가 URL인 경우 인코딩 필요
+  const encodedId = encodeURIComponent(place.id);
+  // 장소 이름도 URL 파라미터로 전달 (리뷰 작성 페이지에서 사용)
+  const encodedName = encodeURIComponent(place.name);
+
   return (
-    <Link href={`/places/${place.id}`} className="block">
+    <Link href={`/places/${encodedId}?name=${encodedName}`} className="block">
       {cardContent}
     </Link>
   );

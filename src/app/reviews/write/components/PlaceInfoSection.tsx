@@ -12,13 +12,59 @@ import { useReviewForm } from '../context';
 import { usePlaceDetail } from '@/features/places/hooks/usePlaceDetail';
 
 /**
+ * UUID 형식 체크 (DB에 있는 장소인지 확인)
+ */
+function isUUID(str: string): boolean {
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidPattern.test(str);
+}
+
+/**
  * 리뷰 작성 페이지 장소 정보 섹션 컴포넌트
  *
  * Context에서 placeId를 가져와 장소 정보를 조회하고 표시합니다.
  */
 export function PlaceInfoSection() {
   const { state } = useReviewForm();
-  const { data: place, isLoading } = usePlaceDetail(state.placeId);
+
+  // UUID가 아니면 (네이버 URL이면) DB 조회 스킵
+  const isDbPlace = isUUID(state.placeId);
+  const { data: place, isLoading } = usePlaceDetail(state.placeId, { enabled: isDbPlace });
+
+  // DB에 없는 장소 (네이버 API에서만 검색된 장소)
+  if (!isDbPlace) {
+    return (
+      <div className="bg-white border-b border-slate-200">
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          {/* 뒤로 가기 버튼 */}
+          <Link href={`/places/${encodeURIComponent(state.placeId)}`} className="inline-block mb-4">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              뒤로
+            </Button>
+          </Link>
+
+          {/* 페이지 제목 */}
+          <h1 className="text-xl md:text-2xl font-bold text-slate-900 mb-4">
+            리뷰 작성
+          </h1>
+
+          {/* 장소 정보 카드 - 간소화된 정보 */}
+          <div className="bg-slate-50 rounded-lg p-4 space-y-3">
+            {/* 장소 이름 */}
+            <h2 className="text-lg font-semibold text-slate-900">
+              {state.placeName || '새로운 장소'}
+            </h2>
+
+            {/* 안내 메시지 */}
+            <p className="text-sm text-slate-600">
+              이 장소의 첫 번째 리뷰를 작성해주세요!
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // 로딩 상태
   if (isLoading) {

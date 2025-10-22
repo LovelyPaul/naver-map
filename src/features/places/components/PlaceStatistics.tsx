@@ -15,6 +15,7 @@ type PlaceStatisticsProps = {
   averageRating: number;
   totalReviews: number;
   placeId: string;
+  placeName?: string;
 };
 
 /**
@@ -26,6 +27,7 @@ type PlaceStatisticsProps = {
  *   averageRating={4.5}
  *   totalReviews={123}
  *   placeId="abc-123"
+ *   placeName="맛있는 식당"
  * />
  * ```
  */
@@ -33,6 +35,7 @@ export function PlaceStatistics({
   averageRating,
   totalReviews,
   placeId,
+  placeName,
 }: PlaceStatisticsProps) {
   return (
     <div className="bg-white border-b border-slate-200">
@@ -61,7 +64,13 @@ export function PlaceStatistics({
           </div>
 
           {/* 리뷰 작성 버튼 */}
-          <Link href={`/reviews/write?placeId=${placeId}`}>
+          <Link
+            href={
+              placeName
+                ? `/reviews/write?placeId=${placeId}&placeName=${encodeURIComponent(placeName)}`
+                : `/reviews/write?placeId=${placeId}`
+            }
+          >
             <Button className="gap-2">
               <Edit className="w-4 h-4" />
               리뷰 작성
