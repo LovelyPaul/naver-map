@@ -28,3 +28,36 @@ export const SearchPlacesResponseSchema = z.object({
 });
 
 export type SearchPlacesResponse = z.infer<typeof SearchPlacesResponseSchema>;
+
+/**
+ * 장소 상세 응답 스키마
+ */
+export const PlaceDetailResponseSchema = z.object({
+  ok: z.literal(true),
+  status: z.number(),
+  data: z.object({
+    id: z.string(),
+    naverPlaceId: z.string(),
+    name: z.string(),
+    address: z.string(),
+    categoryMain: z.string(),
+    categorySub: z.string().nullable(),
+    latitude: z.number(),
+    longitude: z.number(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    statistics: z.object({
+      averageRating: z.number(),
+      totalReviews: z.number(),
+      ratingDistribution: z.object({
+        1: z.number(),
+        2: z.number(),
+        3: z.number(),
+        4: z.number(),
+        5: z.number(),
+      }),
+    }),
+  }),
+});
+
+export type PlaceDetailResponse = z.infer<typeof PlaceDetailResponseSchema>;
