@@ -11,6 +11,9 @@ import { createContext, useContext, useReducer, type ReactNode } from 'react';
 export type ReviewFormState = {
   placeId: string;
   placeName: string;
+  placeAddress?: string;
+  placeCategoryMain?: string;
+  placeCategorySub?: string;
   authorName: string;
   authorEmail: string;
   rating: number;
@@ -31,7 +34,14 @@ export type ReviewFormState = {
  * 리뷰 작성 폼 액션
  */
 export type ReviewFormAction =
-  | { type: 'SET_PLACE'; placeId: string; placeName: string }
+  | {
+      type: 'SET_PLACE';
+      placeId: string;
+      placeName: string;
+      placeAddress?: string;
+      placeCategoryMain?: string;
+      placeCategorySub?: string;
+    }
   | { type: 'SET_AUTHOR_NAME'; value: string }
   | { type: 'SET_AUTHOR_EMAIL'; value: string }
   | { type: 'SET_RATING'; value: number }
@@ -66,7 +76,14 @@ const initialState: ReviewFormState = {
 function reviewFormReducer(state: ReviewFormState, action: ReviewFormAction): ReviewFormState {
   switch (action.type) {
     case 'SET_PLACE':
-      return { ...state, placeId: action.placeId, placeName: action.placeName };
+      return {
+        ...state,
+        placeId: action.placeId,
+        placeName: action.placeName,
+        placeAddress: action.placeAddress,
+        placeCategoryMain: action.placeCategoryMain,
+        placeCategorySub: action.placeCategorySub,
+      };
 
     case 'SET_AUTHOR_NAME':
       return { ...state, authorName: action.value, isDirty: true };
@@ -127,6 +144,9 @@ type ReviewFormProviderProps = {
   children: ReactNode;
   initialPlaceId?: string;
   initialPlaceName?: string;
+  initialPlaceAddress?: string;
+  initialPlaceCategoryMain?: string;
+  initialPlaceCategorySub?: string;
 };
 
 /**
@@ -136,11 +156,17 @@ export function ReviewFormProvider({
   children,
   initialPlaceId = '',
   initialPlaceName = '',
+  initialPlaceAddress,
+  initialPlaceCategoryMain,
+  initialPlaceCategorySub,
 }: ReviewFormProviderProps) {
   const [state, dispatch] = useReducer(reviewFormReducer, {
     ...initialState,
     placeId: initialPlaceId,
     placeName: initialPlaceName,
+    placeAddress: initialPlaceAddress,
+    placeCategoryMain: initialPlaceCategoryMain,
+    placeCategorySub: initialPlaceCategorySub,
   });
 
   return (

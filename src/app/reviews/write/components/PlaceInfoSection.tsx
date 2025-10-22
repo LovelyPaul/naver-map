@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatCategory } from '@/lib/utils/category';
 import { useReviewForm } from '../context';
 import { usePlaceDetail } from '@/features/places/hooks/usePlaceDetail';
+import { PlaceInfoHeader } from '@/features/places/components/PlaceInfoHeader';
 
 /**
  * UUID 형식 체크 (DB에 있는 장소인지 확인)
@@ -34,27 +35,30 @@ export function PlaceInfoSection() {
   // DB에 없는 장소 (네이버 API에서만 검색된 장소)
   if (!isDbPlace) {
     return (
-      <div className="bg-white border-b border-slate-200">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-          {/* 뒤로 가기 버튼 */}
-          <Link href={`/places/${encodeURIComponent(state.placeId)}`} className="inline-block mb-4">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              뒤로
-            </Button>
-          </Link>
+      <>
+        {/* 장소 정보 헤더 */}
+        <PlaceInfoHeader
+          name={state.placeName || '새로운 장소'}
+          categoryMain={state.placeCategoryMain || '기타'}
+          categorySub={state.placeCategorySub}
+          address={state.placeAddress || '주소 정보 없음'}
+        />
 
-          {/* 페이지 제목 */}
-          <h1 className="text-xl md:text-2xl font-bold text-slate-900 mb-4">
-            리뷰 작성
-          </h1>
+        {/* 리뷰 작성 안내 */}
+        <div className="bg-white border-b border-slate-200">
+          <div className="container mx-auto px-4 py-6 max-w-4xl">
+            {/* 뒤로 가기 버튼 */}
+            <Link href={`/places/${encodeURIComponent(state.placeId)}`} className="inline-block mb-4">
+              <Button variant="ghost" size="sm" className="gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                뒤로
+              </Button>
+            </Link>
 
-          {/* 장소 정보 카드 - 간소화된 정보 */}
-          <div className="bg-slate-50 rounded-lg p-4 space-y-3">
-            {/* 장소 이름 */}
-            <h2 className="text-lg font-semibold text-slate-900">
-              {state.placeName || '새로운 장소'}
-            </h2>
+            {/* 페이지 제목 */}
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">
+              리뷰 작성
+            </h1>
 
             {/* 안내 메시지 */}
             <p className="text-sm text-slate-600">
@@ -62,7 +66,7 @@ export function PlaceInfoSection() {
             </p>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 

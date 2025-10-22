@@ -16,6 +16,9 @@ type PlaceStatisticsProps = {
   totalReviews: number;
   placeId: string;
   placeName?: string;
+  placeAddress?: string;
+  placeCategoryMain?: string;
+  placeCategorySub?: string;
 };
 
 /**
@@ -36,7 +39,19 @@ export function PlaceStatistics({
   totalReviews,
   placeId,
   placeName,
+  placeAddress,
+  placeCategoryMain,
+  placeCategorySub,
 }: PlaceStatisticsProps) {
+  // 리뷰 작성 URL 생성 (모든 장소 정보 전달)
+  const reviewWriteParams = new URLSearchParams({
+    placeId: placeId,
+    ...(placeName && { placeName }),
+    ...(placeAddress && { address: placeAddress }),
+    ...(placeCategoryMain && { categoryMain: placeCategoryMain }),
+    ...(placeCategorySub && { categorySub: placeCategorySub }),
+  });
+
   return (
     <div className="bg-white border-b border-slate-200">
       <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -64,13 +79,7 @@ export function PlaceStatistics({
           </div>
 
           {/* 리뷰 작성 버튼 */}
-          <Link
-            href={
-              placeName
-                ? `/reviews/write?placeId=${placeId}&placeName=${encodeURIComponent(placeName)}`
-                : `/reviews/write?placeId=${placeId}`
-            }
-          >
+          <Link href={`/reviews/write?${reviewWriteParams.toString()}`}>
             <Button className="gap-2">
               <Edit className="w-4 h-4" />
               리뷰 작성

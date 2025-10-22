@@ -51,10 +51,15 @@ export default function PlaceDetailPage({ params, searchParams }: PlaceDetailPag
 
   // DB에 없는 장소 (네이버 API에서만 검색된 장소)
   if (!isDbPlace) {
-    // 리뷰 작성 URL 생성 (placeId + placeName 전달)
-    const reviewWriteUrl = placeName
-      ? `/reviews/write?placeId=${encodeURIComponent(placeId)}&placeName=${encodeURIComponent(placeName)}`
-      : `/reviews/write?placeId=${encodeURIComponent(placeId)}`;
+    // 리뷰 작성 URL 생성 (모든 장소 정보 전달)
+    const reviewWriteParams = new URLSearchParams({
+      placeId: placeId,
+      ...(placeName && { placeName }),
+      ...(placeAddress && { address: placeAddress }),
+      ...(placeCategoryMain && { categoryMain: placeCategoryMain }),
+      ...(placeCategorySub && { categorySub: placeCategorySub }),
+    });
+    const reviewWriteUrl = `/reviews/write?${reviewWriteParams.toString()}`;
 
     return (
       <div className="min-h-screen bg-slate-50">
@@ -137,6 +142,9 @@ export default function PlaceDetailPage({ params, searchParams }: PlaceDetailPag
         totalReviews={place.statistics.totalReviews}
         placeId={place.id}
         placeName={place.name}
+        placeAddress={place.address}
+        placeCategoryMain={place.categoryMain}
+        placeCategorySub={place.categorySub}
       />
 
       {/* 별점 분포 */}

@@ -22,7 +22,13 @@ import { useCreateReview } from '@/features/reviews/hooks/useCreateReview';
 import { toast } from '@/hooks/use-toast';
 
 type ReviewWritePageProps = {
-  searchParams: Promise<{ placeId?: string; placeName?: string }>;
+  searchParams: Promise<{
+    placeId?: string;
+    placeName?: string;
+    address?: string;
+    categoryMain?: string;
+    categorySub?: string;
+  }>;
 };
 
 /**
@@ -164,6 +170,9 @@ export default function ReviewWritePage({ searchParams }: ReviewWritePageProps) 
       <ReviewFormProvider
         initialPlaceId={params.placeId}
         initialPlaceName={params.placeName || ''}
+        initialPlaceAddress={params.address}
+        initialPlaceCategoryMain={params.categoryMain}
+        initialPlaceCategorySub={params.categorySub}
       >
         <PlaceInfoSection />
         <FormContent />
