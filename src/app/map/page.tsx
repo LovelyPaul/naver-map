@@ -38,10 +38,22 @@ function MapContent({ searchQuery }: { searchQuery: string }) {
     }));
   }, [places]);
 
-  // 마커 클릭 핸들러 - 리뷰 페이지로 이동
+  // 마커 클릭 핸들러 - 리뷰 유무에 따라 다르게 이동
   const handleMarkerClick = (marker: MapMarker) => {
     const encodedId = encodeURIComponent(marker.placeId);
-    router.push(`/places/${encodedId}`);
+
+    // 리뷰가 있으면 장소 상세 페이지로, 없으면 리뷰 작성 페이지로
+    if (marker.type === 'review') {
+      // 리뷰가 있는 경우: 장소 상세 페이지
+      router.push(`/places/${encodedId}?name=${encodeURIComponent(marker.placeName)}`);
+    } else {
+      // 리뷰가 없는 경우: 리뷰 작성 페이지로 바로 이동
+      const reviewWriteParams = new URLSearchParams({
+        placeId: marker.placeId,
+        placeName: marker.placeName,
+      });
+      router.push(`/reviews/write?${reviewWriteParams.toString()}`);
+    }
   };
 
   // 장소 클릭 핸들러 (검색 결과 리스트) - 지도 중심 이동
