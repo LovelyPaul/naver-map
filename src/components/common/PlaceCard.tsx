@@ -55,12 +55,6 @@ export function PlaceCard({ place, onClick, showReviewButton = false, className 
     }
   };
 
-  const handleReviewButtonClick = (e: React.MouseEvent) => {
-    // 이벤트 버블링 방지 (카드 클릭 이벤트와 분리)
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
   // 이미지 URL 결정: photoUrl이 있으면 사용, 없으면 카테고리별 placeholder
   const imageUrl = place.photoUrl || getCategoryPlaceholderImage(place.categoryMain);
 
@@ -146,7 +140,6 @@ export function PlaceCard({ place, onClick, showReviewButton = false, className 
                 categoryMain: place.categoryMain,
                 ...(place.categorySub && { categorySub: place.categorySub }),
               }).toString()}`}
-              onClick={handleReviewButtonClick}
             >
               <Button variant="outline" size="sm" className="w-full gap-2">
                 <Edit className="w-4 h-4" />
