@@ -86,9 +86,23 @@ export function PlaceCard({ place, onClick, showReviewButton = false, className 
           {/* 장소 정보 */}
           <div className="flex-1 min-w-0">
             {/* 장소명 */}
-            <h3 className="text-base font-semibold text-gray-900 truncate mb-1">
-              {place.name}
-            </h3>
+            {showReviewButton ? (
+              <Link
+                href={`/places/${encodeURIComponent(place.id)}?${new URLSearchParams({
+                  name: place.name,
+                  address: place.address,
+                  categoryMain: place.categoryMain,
+                  ...(place.categorySub && { categorySub: place.categorySub }),
+                }).toString()}`}
+                className="text-base font-semibold text-gray-900 hover:text-blue-600 truncate mb-1 block"
+              >
+                {place.name}
+              </Link>
+            ) : (
+              <h3 className="text-base font-semibold text-gray-900 truncate mb-1">
+                {place.name}
+              </h3>
+            )}
 
             {/* 카테고리 */}
             <div className="mb-2">
@@ -155,6 +169,11 @@ export function PlaceCard({ place, onClick, showReviewButton = false, className 
     categoryMain: place.categoryMain,
     ...(place.categorySub && { categorySub: place.categorySub }),
   });
+
+  // 리뷰 작성 버튼이 있는 경우 Link로 감싸지 않음 (버튼 클릭 충돌 방지)
+  if (showReviewButton) {
+    return cardContent;
+  }
 
   return (
     <Link href={`/places/${encodedId}?${queryParams.toString()}`} className="block">
