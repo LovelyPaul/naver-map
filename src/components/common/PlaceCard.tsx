@@ -133,13 +133,23 @@ export function PlaceCard({ place, onClick, showReviewButton = false, className 
         {showReviewButton && (
           <div className="mt-3 pt-3 border-t border-gray-100">
             <Link
-              href={`/reviews/write?${new URLSearchParams({
-                placeId: place.id,
-                placeName: place.name,
-                address: place.address,
-                categoryMain: place.categoryMain,
-                ...(place.categorySub && { categorySub: place.categorySub }),
-              }).toString()}`}
+              href={
+                // 기존 리뷰가 있으면 장소 상세 페이지로, 없으면 바로 리뷰 작성 페이지로
+                place.hasReviews
+                  ? `/places/${encodeURIComponent(place.id)}?${new URLSearchParams({
+                      name: place.name,
+                      address: place.address,
+                      categoryMain: place.categoryMain,
+                      ...(place.categorySub && { categorySub: place.categorySub }),
+                    }).toString()}`
+                  : `/reviews/write?${new URLSearchParams({
+                      placeId: place.id,
+                      placeName: place.name,
+                      address: place.address,
+                      categoryMain: place.categoryMain,
+                      ...(place.categorySub && { categorySub: place.categorySub }),
+                    }).toString()}`
+              }
             >
               <Button variant="outline" size="sm" className="w-full gap-2">
                 <Edit className="w-4 h-4" />
