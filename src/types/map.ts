@@ -24,6 +24,9 @@ export type MapMarker = {
   placeId?: string;
   placeName?: string;
   photoUrl?: string | null;
+  address?: string;
+  categoryMain?: string;
+  categorySub?: string;
 };
 
 /**

@@ -35,6 +35,9 @@ function MapContent({ searchQuery }: { searchQuery: string }) {
       placeId: place.id,
       placeName: place.name,
       photoUrl: place.photoUrl,
+      address: place.address,
+      categoryMain: place.categoryMain,
+      categorySub: place.categorySub,
     }));
   }, [places]);
 
@@ -45,12 +48,21 @@ function MapContent({ searchQuery }: { searchQuery: string }) {
     // 리뷰가 있으면 장소 상세 페이지로, 없으면 리뷰 작성 페이지로
     if (marker.type === 'review') {
       // 리뷰가 있는 경우: 장소 상세 페이지
-      router.push(`/places/${encodedId}?name=${encodeURIComponent(marker.placeName)}`);
+      const placeParams = new URLSearchParams({
+        name: marker.placeName,
+        address: marker.address || '',
+        categoryMain: marker.categoryMain || '',
+        ...(marker.categorySub && { categorySub: marker.categorySub }),
+      });
+      router.push(`/places/${encodedId}?${placeParams.toString()}`);
     } else {
       // 리뷰가 없는 경우: 리뷰 작성 페이지로 바로 이동
       const reviewWriteParams = new URLSearchParams({
         placeId: marker.placeId,
         placeName: marker.placeName,
+        address: marker.address || '',
+        categoryMain: marker.categoryMain || '',
+        ...(marker.categorySub && { categorySub: marker.categorySub }),
       });
       router.push(`/reviews/write?${reviewWriteParams.toString()}`);
     }
